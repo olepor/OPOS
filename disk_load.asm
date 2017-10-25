@@ -17,12 +17,13 @@ disk_load:
   pop dx                        ; restore the dx register
   cmp dh, al                    ; If Al != DH (sectors read) vs (expecter)
   jne disc_error                ; display error message
+
   ret
 
 disc_error:
   mov bx, DISC_ERROR_MESSAGE
   call print_string
-  jmp$
+  jmp $
 
 ; Variables
   DISC_ERROR_MESSAGE db "Disc read error!", 0
