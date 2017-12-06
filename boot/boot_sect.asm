@@ -19,14 +19,14 @@
 
   jmp $                         ; hang
 
-%include "./print/print_string.asm"
-%include "./print/print_string_pm.asm"
-%include "./hex/print_hex.asm"
-%include "disk_load.asm"
-%include "gdt.asm"
-%include "switch_to_pm.asm"
+%include "boot/print/print_string.asm"
+%include "boot/print/print_string_pm.asm"
+%include "boot/hex/print_hex.asm"
+%include "boot/disk_load.asm"
+%include "boot/gdt.asm"
+%include "boot/switch_to_pm.asm"
 
-  [bits 16]
+[bits 16]
 
 load_kernel:
 
@@ -39,17 +39,20 @@ load_kernel:
 
   call disk_load
 
+  mov dx, KERNEL_OFFSET
+  call switch_to_pm
+
   ret                           ; never forget
 
-  [bits 32]
+[bits 32]
 
-  ; Arrive here after switching to protected mode
+; Arrive here after switching to protected mode
 BEGIN_PM:
 
   mov ebx, MSG_PROT_MODE
   call print_string_pm          ; use our 32-bit print routine
 
-  ;; call KERNEL_OFFSET            ; now jump to the address of our loaded kernel-code
+  call KERNEL_OFFSET            ; now jump to the address of our loaded kernel-code
 
   jmp $                         ; hang
 

@@ -2,6 +2,7 @@
 ;; load DH sectors to ES:BX from drive DL
 ;;
 disk_load:
+
   push dx                       ; Remember dx, so that we can recall
                                 ; how many sectors were requested read.
   mov ah, 0x02                  ; BIOS read sector function
@@ -9,6 +10,7 @@ disk_load:
   mov ch, 0x00                  ; Select cylinder 0
   mov dh, 0x00                  ; Select head 0
   mov cl, 0x02                  ; Start reading from the second sector
+
 
   int 0x13                      ; BIOS interrupt
 
@@ -26,4 +28,4 @@ disc_error:
   jmp $
 
 ; Variables
-  DISC_ERROR_MESSAGE db "Disc read error!", 0
+DISC_ERROR_MESSAGE db "Disc read error!", 0

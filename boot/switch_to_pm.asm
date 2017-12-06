@@ -16,8 +16,8 @@ switch_to_pm:
   ; decoded instructions, which can cause havoc otherwise.
 
 
-  [bits 32]
-  ; initialise registers and the stack once in PM
+[bits 32]
+; initialise registers and the stack once in PM
 init_pm:
   mov ax, DATA_SEG              ; in PM our old segments are meaningless
   mov ds, ax                    ; so we point our segment registers to the
