@@ -19,12 +19,12 @@
 
   jmp $                         ; hang
 
-%include "boot/print/print_string.asm"
-%include "boot/print/print_string_pm.asm"
-%include "boot/hex/print_hex.asm"
-%include "boot/disk_load.asm"
-%include "boot/gdt.asm"
-%include "boot/switch_to_pm.asm"
+%include "./print/print_string.asm"
+%include "./print/print_string_pm.asm"
+%include "./hex/print_hex.asm"
+%include "./disk_load.asm"
+%include "./gdt.asm"
+%include "./switch_to_pm.asm"
 
 [bits 16]
 

@@ -1,44 +1,73 @@
-C_SOURCES = ${wildcard kernel/*.c drivers/*.c}
-OBJDIR = build/obj/
-HEADERS = ${wildcard kernel/*.h drivers/*.h}
-OBJ = ${wildcard build/obj/*.o}
-BINS = ${wildcard build/bin/*.bin}
+include makefile.inc
 
-
+.PHONY: all
 all: os_img
+>	echo $<
 
+.PHONY: run
 run: all
-	qemu-system-x86_64 -fda os_img -boot a &
+>	qemu-system-x86_64 -fda os_img -boot a &
 
-build/obj/kernel_entry.o: boot/kernel_entry.asm
-	nasm -f elf -o $@ $<
+# kernel_entry.o: boot/kernel_entry.asm
+# 	nasm -f elf -o $@ $<
 
-build/bin/boot_sect.bin: boot/boot_sect.asm
-	pwd
-	nasm -f bin -o $@ $<
+# boot_sect.bin: boot/boot_sect.asm
+# 	pwd
+# 	nasm -f bin -o $@ $<
 
 # kernel.o: kernel.c
 # 	gcc -ffreestanding -m32 -c $< -o $@
 
-${OBJDIR}%.o : C_SOURCES ${HEADERS}
-	gcc -ffreestanding -m32 -c $< -o $@ # compile a 32-bit obj-file from the c-sources
+# $(OBJS): ${C_SOURCES} ${HEADERS} | $(OBJDIR)
+# 	echo "building objs"
+# 	echo $@
+# 	$(CC) -ffreestanding -m32 -c $< -o $(OBJDIR)/$@ # compile a 32-bit obj-file from the c-sources
 
-build/bin/kernel.bin: build/obj/kernel_entry.o
-	ld -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_i386
+# $(OBJDIR):
+# 	mkdir $(OBJDIR)
 
-os_img: build/bin/boot_sect.bin build/bin/kernel.bin
-	cat $^ > $@
+# $(OBJDIR)/%.o : C_SOURCES ${HEADERS}
+# 	$(CC) -ffreestanding -m32 -c $< -o $@ # compile a 32-bit obj-file from the c-sources
 
-kernel.dis: kernel.bin
-	ndisasm -b 32 $< > $@
+# $(BINDIR)/kernel.bin: $(OBJDIR)/kernel_entry.o # TODO - what to link here?
+# 	ld -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_i386
 
+# Concatenate the bootloader and the kernel into an image
+os_img: #$(BINDIR)/boot_sect.bin ${BINDIR}/kernel.bin
+# Build the bootloader
+> @cd boot && $(MAKE) -f boot.mk
+# Build the kernel
+> @cd kernel && $(MAKE) -f kernel.mk
+# Build the drivers
+> cd drivers && $(MAKE) -f drivers.mk
+# > @echo "os_img"
+# >	cat $^ > $@
+> @cat $(BINDIR)/boot_sect.bin $(BINDIR)/kernel.bin > os_img
+
+
+# Add the debug flag to the debug recipe, and all the recipes for the prerequisites
+debug: CFLAGS += -g
 debug: os_img boot_entry.asm
 	#Boot the image on x86, ready for debug (-s) and stop cpu (-S)
-	qemu-system-x86_64 -fda $< -boot a -s -S &
-	sleep 1 # Otherwise the connection is not opened yet
-	gdb
+>	@qemu-system-x86_64 -fda $< -boot a -s -S &
+>	@sleep 1 # Otherwise the connection is not opened yet
+>	@gdb
 
+.PHONY: cleanobj
+cleanobj:
+>	-rm $(OBJDIR)/*.o
+
+.PHONY: cleanbin
+cleanbin:
+>	-rm $(BINDIR)/*.bin
+
+.PHONY: clean
 clean:
-	rm *.o *.dis os_img *.bin
+>	-rm *.o *.dis os_img *.bin
 
-.PHONY: debug run clean all
+.PHONY: cleanall
+cleanall: cleanobj cleanbin clean
+
+.PHONY: todolist
+todolist:
+>	-@for file in $(ALLFILES:Makefile=); do fgrep -H -e TODO -e FIXME $$file;done ; true
