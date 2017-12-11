@@ -1,6 +1,12 @@
 # Change the recipe prefix for readability
 .RECIPEPREFIX = >
 
+# We dont need to run the implicit rules for all kinds of files
+# Clear the list
+.SUFFIXES: 
+# Assign what we need
+.SUFFIXES: .c .h .o .bin
+
 PROJDIR = /home/opus/OPOS
 
 OBJDIR := $(PROJDIR)/build/obj

@@ -42,7 +42,7 @@ $(OBJDIR)/kernel_entry.o: kernel_entry.asm
 > @nasm -f elf -o $@ $<
 
 $(BINDIR)/kernel.bin: $(OBJDIR)/kernel_entry.o $(OBJDIR)/kernel.o
-> @ld -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_i386
+> @$(LD) -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_i386
 
 kernel.dis: $(BINDIR)/kernel.bin
 >	ndisasm -b 32 $< > $@

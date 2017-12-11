@@ -19,11 +19,22 @@ OBJDIR ?= obj
 BINDIR ?= bin
 
 # .PHONY = all
-all: # TODO add depenencies
-# > @echo ${HOSTARCH}
-# > @echo ${VPATH}
-# > @echo ${C_FILES}
-# > @echo ${CFLAGS}
+# TODO add the objdir to all the obj-files on OBJS
+# Make all depend on all the driver obj-files in objdir-directory
+all: $(addprefix $(OBJDIR)/, $(notdir $(OBJS)))
+> @echo ${HOSTARCH}
+> @echo ${VPATH}
+> @echo ${C_FILES}
+> @echo ${CFLAGS}
+> @echo $(OBJS)
+> @echo $(OBJDIR)
+> @echo $(addprefix $(OBJDIR)/, $(notdir $(OBJS)))
+
+# Add all object files as targets, and c-files as prerequisites
+# and run the implicit rule defined below
+# FIXME - include .d files to list all prerequisites for each obj file (e.g. .c and .h files)
+$(addprefix $(OBJDIR)/, $(notdir $(OBJS))) : $(C_FILES)
 
 $(OBJDIR)/%.o : %.c
+> @echo "Obj implicit rule"
 > $(CC) -o $@ -c $< $(CFLAGS)
