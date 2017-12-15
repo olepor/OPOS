@@ -8,41 +8,43 @@ include ../makefile.inc
 
 ARCHDIR = arch/${HOSTARCH}/
 VPATH = ${ARCHDIR} # Reveal all the files from the arch/type-arch dir
-C_FILES := ${shell find . -name *.c}
+C_FILES := ${shell find . -name "*.c"}
+DEPENDENCY_FILES = ${addprefix ${DEPDIR}/, ${notdir ${C_FILES:.c=.d}}}
 OBJS = ${C_FILES:.c=.o} # patsubst shortcut
+OBJFILES := ${addprefix ${OBJDIR}/, ${notdir ${OBJS}}}
 
 # Temp hostarch and variables. remove later when testing of this file is done
 HOSTARCH ?= i386
 CC ?= gcc
-CFLAGS ?= -ffreestanding -m32
+CFLAGS ?= -ffreestanding # -m32
 OBJDIR ?= obj
 BINDIR ?= bin
 
 .PHONY = all
-all: $(BINDIR)/kernel.bin
-> @echo ${HOSTARCH}
-> @echo ${VPATH}
-> @echo ${C_FILES}
-> @echo ${CFLAGS}
+all: ${DEPENDENCY_FILES} ${OBJFILES} ${BINDIR}/kernel.bin
 
-# Automatically generate a prerequisicite file for all .c files
-# %.d: %.c
-# 	@echo "creating all dependency files"
-#   @set -e; rm -f $@; \ # Exit shell on error
-#    $(CC) -M $(CPPFLAGS) $< > $@.$$$$; \ # Get the list of dependencies
-#    sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \ # Transform the list by adding %.d as a target
-#    rm -f $@.$$$$
+# Include all the automatically generated makefiles made my the .d dependencies
+include ${DEPENDENCY_FILES}
 
-$(OBJDIR)/%.o : %.c # Implicit rule to build all c-files, and create the obj-dir if it doesnt exist
+$(OBJDIR)/kernel_entry.o: kernel_entry.asm
+> @nasm -f elf64 -o $@ $<
+
+$(BINDIR)/kernel.bin: $(OBJDIR)/kernel_entry.o $(OBJDIR)/kernel.o
+> @$(LD) -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_x86_64
+
+kernel.dis: $(BINDIR)/kernel.bin
+>	ndisasm -b 32 $< > $@
+
+# Implicit rule to build all c-files
+.SECONDEXPANSION:
+$(OBJDIR)/%.o : %.c $$(someshellcommand to call compiler prerequisite creation and filtering)
 > @echo "Implicit kernel rule" $<
 > @$(CC) -o $@ -c $< $(CFLAGS)
 > @echo "after implicit kernel rule"
 
-$(OBJDIR)/kernel_entry.o: kernel_entry.asm
-> @nasm -f elf -o $@ $<
-
-$(BINDIR)/kernel.bin: $(OBJDIR)/kernel_entry.o $(OBJDIR)/kernel.o
-> @$(LD) -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_i386
-
-kernel.dis: $(BINDIR)/kernel.bin
->	ndisasm -b 32 $< > $@
+# Implicit rule to automatically generate dependencies for c-files
+# This can also be done using only the -MD flag to the compiler
+# Thus we don't really have to write this rule
+${DEPDIR}/%.d : %.c
+> @echo "generating dependencies for" $<
+> @set -e; rm -f $@; $(CC) -MM $(CFLAGS) $< > $@.$$$$; sed 's,\($*\)\.o[ :]*,$(OBJDIR)/\1.o $@ : ,g' < $@.$$$$ > $@; rm -f $@.$$$$

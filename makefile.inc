@@ -11,6 +11,7 @@ PROJDIR = /home/opus/OPOS
 
 OBJDIR := $(PROJDIR)/build/obj
 BINDIR := $(PROJDIR)/build/bin
+DEPDIR := $(PROJDIR)/build/dep
 
 HOSTARCH ?= i386
 
@@ -26,7 +27,7 @@ HOSTARCH ?= i386
 # .DELETE_ON_ERROR # Do not keep files that are not processed completely
 
 CC ?= gcc
-CFLAGS ?= -ffreestanding -m32 -Wall
+CFLAGS ?= -ffreestanding -Wall #-m32
+LDFLAGS ?= 
 
 # include ${C_SOURCES:.c=.d} # Read in all the .d files
-# include boot/boot.mk # kernel/kernel.mk drivers/drivers.mk # Run the other makefiles first
