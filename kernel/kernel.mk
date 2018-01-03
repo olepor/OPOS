@@ -20,11 +20,12 @@ CFLAGS ?= -ffreestanding # -m32
 OBJDIR ?= obj
 BINDIR ?= bin
 
-.PHONY = all
-all: ${DEPENDENCY_FILES} ${OBJFILES} ${BINDIR}/kernel.bin
+.PHONY: all
+all: ${OBJFILES} ${BINDIR}/kernel.bin
+# all: $(OBJDIR)/kernel.o
 
 # Include all the automatically generated makefiles made my the .d dependencies
-include ${DEPENDENCY_FILES}
+# include ${DEPENDENCY_FILES}
 
 $(OBJDIR)/kernel_entry.o: kernel_entry.asm
 > @nasm -f elf64 -o $@ $<
@@ -37,14 +38,7 @@ kernel.dis: $(BINDIR)/kernel.bin
 
 # Implicit rule to build all c-files
 .SECONDEXPANSION:
-$(OBJDIR)/%.o : %.c $$(someshellcommand to call compiler prerequisite creation and filtering)
+$(OBJDIR)/%.o : $$(shell ../utils/scripts/generatedeps %.c)
 > @echo "Implicit kernel rule" $<
 > @$(CC) -o $@ -c $< $(CFLAGS)
 > @echo "after implicit kernel rule"
-
-# Implicit rule to automatically generate dependencies for c-files
-# This can also be done using only the -MD flag to the compiler
-# Thus we don't really have to write this rule
-${DEPDIR}/%.d : %.c
-> @echo "generating dependencies for" $<
-> @set -e; rm -f $@; $(CC) -MM $(CFLAGS) $< > $@.$$$$; sed 's,\($*\)\.o[ :]*,$(OBJDIR)/\1.o $@ : ,g' < $@.$$$$ > $@; rm -f $@.$$$$

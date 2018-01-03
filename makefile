@@ -24,7 +24,7 @@ os_img: #$(BINDIR)/boot_sect.bin ${BINDIR}/kernel.bin
 
 # Add the debug flag to the debug recipe, and all the recipes for the prerequisites
 # also export it so that it is overwritten in all the submakes also
-debug: export CFLAGS += -g
+debug: export CFLAGS += -ggdb3 # extensive debugging information for gdb (DWARF 2) files, level three (max)
 debug: os_img
 	#Boot the image on x86, ready for debug (-s) and stop cpu (-S)
 >	@qemu-system-x86_64 -fda $< -boot a -s -S &
