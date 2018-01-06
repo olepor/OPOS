@@ -33,8 +33,9 @@ all: $(addprefix $(OBJDIR)/, $(notdir $(OBJS)))
 # Add all object files as targets, and c-files as prerequisites
 # and run the implicit rule defined below
 # FIXME - include .d files to list all prerequisites for each obj file (e.g. .c and .h files)
-$(addprefix $(OBJDIR)/, $(notdir $(OBJS))) : $(C_FILES)
+# $(addprefix $(OBJDIR)/, $(notdir $(OBJS))) : $(C_FILES)
 
-$(OBJDIR)/%.o : %.c
+.SECONDEXPANSION:
+$(OBJDIR)/%.o : $$(shell ../utils/scripts/generatedeps %.c)
 > @echo "Obj implicit rule"
 > $(CC) -o $@ -c $< $(CFLAGS)

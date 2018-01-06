@@ -7,7 +7,7 @@
 # Assign what we need
 .SUFFIXES: .c .h .o .bin
 
-PROJDIR = /home/opus/OPOS
+PROJDIR = /home/olepor/OPOS
 
 OBJDIR := $(PROJDIR)/build/obj
 BINDIR := $(PROJDIR)/build/bin

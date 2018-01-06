@@ -13,20 +13,12 @@ CFLAGS ?= -ffreestanding -m32
 OBJDIR ?= obj
 BINDIR ?= bin
 
-# .PHONY = all
-# all: $(BINDIR)/boot_sect.bin
+.PHONY = all
+all: $(BINDIR)/boot_sect.bin
 # > @echo ${HOSTARCH}
 # > @echo ${VPATH}
 # > @echo ${C_FILES}
 # > @echo ${CFLAGS}
-
-# Automatically generate a prerequisicite file for all .c files
-# %.d: %.c
-# 	@echo "creating all dependency files"
-#   @set -e; rm -f $@; \ # Exit shell on error
-#    $(CC) -M $(CPPFLAGS) $< > $@.$$$$; \ # Get the list of dependencies
-#    sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \ # Transform the list by adding %.d as a target
-#    rm -f $@.$$$$
 
 $(BINDIR)/boot_sect.bin: boot_sect.asm
 > @echo $(BINDIR)
