@@ -8,7 +8,7 @@ include ../makefile.inc
 
 ARCHDIR = arch/${HOSTARCH}/
 VPATH = ${ARCHDIR} # Reveal all the files from the arch/type-arch dir
-C_FILES := ${shell find . -name "*.c"}
+C_FILES := ${shell find . -name "*.c" -not -path "./test/*"}
 DEPENDENCY_FILES = ${addprefix ${DEPDIR}/, ${notdir ${C_FILES:.c=.d}}}
 OBJS = ${C_FILES:.c=.o} # patsubst shortcut
 OBJFILES := ${addprefix ${OBJDIR}/, ${notdir ${OBJS}}}
@@ -30,7 +30,7 @@ all: ${OBJFILES} ${BINDIR}/kernel.bin
 $(OBJDIR)/kernel_entry.o: kernel_entry.asm
 > @nasm -f elf64 -o $@ $<
 
-$(BINDIR)/kernel.bin: $(OBJDIR)/kernel_entry.o $(OBJDIR)/kernel.o
+$(BINDIR)/kernel.bin: $(OBJDIR)/kernel_entry.o $(OBJDIR)/kernel.o $(OBJDIR)/framebuffer.o
 > @$(LD) -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_x86_64
 
 kernel.dis: $(BINDIR)/kernel.bin

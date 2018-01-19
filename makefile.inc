@@ -27,7 +27,7 @@ HOSTARCH ?= i386
 # .DELETE_ON_ERROR # Do not keep files that are not processed completely
 
 CC ?= gcc
-CFLAGS ?= -ffreestanding -Wall #-m32
+CFLAGS ?= -ffreestanding -Wall -std=gnu99#-m32
 LDFLAGS ?= 
 
 # include ${C_SOURCES:.c=.d} # Read in all the .d files
