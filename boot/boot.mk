@@ -6,12 +6,9 @@
 
 include ../makefile.inc
 
-# Temp hostarch and variables. remove later when testing of this file is done
-HOSTARCH ?= i386
-CC ?= gcc
-CFLAGS ?= -ffreestanding -m32
-OBJDIR ?= obj
-BINDIR ?= bin
+
+# this will copy the current directory structure under proj/build
+OBJDIR = ${shell pwd | sed 's:OPOS:OPOS/build:'}
 
 .PHONY = all
 all: $(BINDIR)/boot_sect.bin

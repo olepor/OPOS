@@ -9,36 +9,45 @@ include ../makefile.inc
 ARCHDIR = arch/${HOSTARCH}/
 VPATH = ${ARCHDIR} # Reveal all the files from the arch/type-arch dir
 C_FILES := ${shell find . -name "*.c" -not -path "./test/*"}
-DEPENDENCY_FILES = ${addprefix ${DEPDIR}/, ${notdir ${C_FILES:.c=.d}}}
+H_FILES := ${shell find . -name "*.h" -not -path "./test/*"}
 OBJS = ${C_FILES:.c=.o} # patsubst shortcut
 OBJFILES := ${addprefix ${OBJDIR}/, ${notdir ${OBJS}}}
+
+# this will copy the current directory structure under proj/build
+OBJDIR = "/home/olepor/OPOS/kernel/obj" #${shell pwd | sed 's:OPOS:OPOS/build:'}
 
 # Temp hostarch and variables. remove later when testing of this file is done
 HOSTARCH ?= i386
 CC ?= gcc
 CFLAGS ?= -ffreestanding # -m32
-OBJDIR ?= obj
 BINDIR ?= bin
 
 .PHONY: all
-all: ${OBJFILES} ${BINDIR}/kernel.bin
+all: ${OBJS} kernel.bin
+> @echo ${OBJFILES}
+> @echo ${OBJDIR}
+> @echo ${OBJS}
 # all: $(OBJDIR)/kernel.o
 
-# Include all the automatically generated makefiles made my the .d dependencies
-# include ${DEPENDENCY_FILES}
+.PHONY: install-headers
+install-headers:
+> cp -r --preserve=timestamps ${H_FILES} ../sysroot/usr/include
 
-$(OBJDIR)/kernel_entry.o: kernel_entry.asm
-> @nasm -f elf64 -o $@ $<
+kernel_entry.o: kernel_entry.asm
+> @${AS} -o $@ $<
 
-$(BINDIR)/kernel.bin: $(OBJDIR)/kernel_entry.o $(OBJDIR)/kernel.o $(OBJDIR)/framebuffer.o
-> @$(LD) -o $@ -Ttext 0x1000 $^ --oformat binary -m elf_x86_64
+# TODO link in compilation
+kernel.bin: kernel_entry.o kernel.o framebuffer.o
+> @$(LD) -o $@ -Ttext 0x1000 $^ $(LDFLAGS)
 
 kernel.dis: $(BINDIR)/kernel.bin
 >	ndisasm -b 32 $< > $@
 
 # Implicit rule to build all c-files
-.SECONDEXPANSION:
-$(OBJDIR)/%.o : $$(shell ../utils/scripts/generatedeps %.c)
-> @echo "Implicit kernel rule" $<
+%.o:%.c
 > @$(CC) -o $@ -c $< $(CFLAGS)
-> @echo "after implicit kernel rule"
+# .SECONDEXPANSION:
+# $(OBJDIR)/%.o : $$(shell ../utils/scripts/generatedeps %.c)
+# > @echo "Implicit kernel rule" $<
+# > @$(CC) -o $@ -c $< $(CFLAGS)
+# > @echo "after implicit kernel rule"

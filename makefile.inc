@@ -9,11 +9,13 @@
 
 PROJDIR = /home/olepor/OPOS
 
-OBJDIR := $(PROJDIR)/build/obj
-BINDIR := $(PROJDIR)/build/bin
-DEPDIR := $(PROJDIR)/build/dep
+# TODO - all makefiles should make a copy of it's directory structure in build,
+# and keep it's object files there
+# OBJDIR := $(PROJDIR)/build/obj
+BINDIR := $(PROJDIR)/sysroot/usr/bin
+DEPDIR := $(PROJDIR)/sysroot/usr/dep
 
-HOSTARCH ?= i386
+HOSTARCH ?= i686
 
 # %.o : $(CODEDIR)%.o : $(C_SOURCES)
 	# This should get just the filename as a pattern
@@ -26,8 +28,9 @@ HOSTARCH ?= i386
 
 # .DELETE_ON_ERROR # Do not keep files that are not processed completely
 
-CC ?= gcc
-CFLAGS ?= -ffreestanding -Wall -std=gnu99#-m32
-LDFLAGS ?= 
+CC ?= i686-elf-gcc
+CFLAGS ?= -ffreestanding -Wall -std=gnu11
+# -wrap option could be handy for testing
+LDFLAGS ?= -Map=linkmapfile.map --verbose  --oformat binary #--print-map
 
 # include ${C_SOURCES:.c=.d} # Read in all the .d files

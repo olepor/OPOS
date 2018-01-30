@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Add the cross-compiler to the path
+#
+export PATH="/home/olepor/opt/cross/bin:$PATH"
+export TARGETARCH=i686
+
+export INCLUDEDIR="/home/olepor/OPOS/sysroot/usr/include"
+
+# export INCLUDEDIR=
+
+export HOST=i686-elf
+export CC=${HOST}-gcc
+
+# Configure the cross-compiler to use the desired system root.
+export SYSROOT="$(pwd)/build"
+export CC="$CC --sysroot=$SYSROOT -isystem=$INCLUDEDIR"
+export AS=${HOST}-as
+export LD=${HOST}-ld
+

@@ -19,7 +19,12 @@ os_img: #$(BINDIR)/boot_sect.bin ${BINDIR}/kernel.bin
 > @cd kernel && $(MAKE) -f kernel.mk
 # Build the drivers
 > cd drivers && $(MAKE) -f drivers.mk
-> @cat $(BINDIR)/boot_sect.bin $(BINDIR)/kernel.bin > os_img
+> @cat $(BINDIR)/boot_sect.bin /home/olepor/OPOS/kernel$(BINDIR)/kernel.bin > os_img
+
+.PHONY: install-headers
+install-headers:
+> @cd kernel && $(MAKE) -f kernel.mk install-headers
+> @cd drivers && $(MAKE) -f drivers.mk install-headers
 
 
 # Add the debug flag to the debug recipe, and all the recipes for the prerequisites
