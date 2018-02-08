@@ -1,0 +1,2 @@
+export PATH="/home/olepor/OPOS/bitbake/bin:$PATH"
+export PYTHONPATH="/home/olepor/OPOS/bitbake/lib:$PYTHONPATH"

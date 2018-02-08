@@ -2,3 +2,7 @@ build
 os_img
 *.d
 */*.o
+bitbake/
+kernel/*.bin
+kernel/*.map
+kernel/obj
