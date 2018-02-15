@@ -1,8 +1,7 @@
-description = "Builds the OPOS kernel"
 PR = "r1"
-DEFAULT_PREFERENCE = "5"
+DEFAULT_PREFERENCE = "0"
 
-SRC_URI = "https://github.com/olepor/OPOS.git;protocol=https;branch=master"
+SRC_URI = "https://github.com/olepor/OPOS.git;protocol=https;branch=bitbake"
 
 # do_build[dirs] = "${WORKDIR}/usr"
 do_build() {
@@ -30,5 +29,6 @@ do_createsysrootfilesystem() {
   mkdir -p ${WORKDIR}/bin
   mkdir -p ${WORKDIR}/lib
   mkdir -p ${WORKDIR}/usr
+  mkdir -p ${WORKDIR}/usr/include
 }
 addtask createsysrootfilesystem before do_build
