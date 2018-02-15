@@ -6,3 +6,4 @@ bitbake/
 kernel/*.bin
 kernel/*.map
 kernel/obj
+meta-opos

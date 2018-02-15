@@ -11,10 +11,6 @@ VPATH = ${ARCHDIR} # Reveal all the files from the arch/type-arch dir
 C_FILES := ${shell find . -name "*.c" -not -path "./test/*"}
 H_FILES := ${shell find . -name "*.h" -not -path "./test/*"}
 OBJS = ${C_FILES:.c=.o} # patsubst shortcut
-OBJFILES := ${addprefix ${OBJDIR}/, ${notdir ${OBJS}}}
-
-# this will copy the current directory structure under proj/build
-OBJDIR = "/home/olepor/OPOS/kernel/obj" #${shell pwd | sed 's:OPOS:OPOS/build:'}
 
 # Temp hostarch and variables. remove later when testing of this file is done
 HOSTARCH ?= i386
@@ -34,10 +30,11 @@ install-headers:
 > cp -r --preserve=timestamps ${H_FILES} ../sysroot/usr/include
 
 kernel_entry.o: kernel_entry.asm
-> @${AS} -o $@ $<
+> nasm -o $@ $< -f elf
 
 # TODO link in compilation
 kernel.bin: kernel_entry.o kernel.o framebuffer.o
+> @echo $(LD)
 > @$(LD) -o $@ -Ttext 0x1000 $^ $(LDFLAGS)
 
 kernel.dis: $(BINDIR)/kernel.bin
@@ -51,3 +48,7 @@ kernel.dis: $(BINDIR)/kernel.bin
 # > @echo "Implicit kernel rule" $<
 # > @$(CC) -o $@ -c $< $(CFLAGS)
 # > @echo "after implicit kernel rule"
+
+.PHONY: clean
+clean:
+>	@rm -rf *.o *.bin
