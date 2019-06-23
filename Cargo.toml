@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Ole Petter <olepor@matnat.uio.no>"]
 
 [dependencies]
-bootloader = "0.3.12"
+bootloader = "0.6.0"
 volatile = "0.2.6"
 spin = "0.5.0"
 
