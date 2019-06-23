@@ -7,5 +7,5 @@ no practical use whatsoever.
 
 In order to build the kernel, run 
 ```
-cargo xbuild
+cargo bootimage
 ```
