@@ -1,0 +1,16 @@
+[package]
+name = "opos"
+version = "0.1.0"
+authors = ["Ole Petter <olepor@matnat.uio.no>"]
+
+[dependencies]
+bootloader = "0.3.12"
+volatile = "0.2.6"
+spin = "0.5.0"
+
+[dependencies.lazy_static]
+version = "1.3.0"
+features = ["spin_no_std"]
+
+[package.metadata.bootimage]
+default-target = "x86_64-opos.json"
