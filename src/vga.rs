@@ -1,10 +1,7 @@
-extern crate volatile;
-extern crate spin;
-
-use lazy_static::lazy_static;
-use self::volatile::Volatile;
 use core::fmt;
-use self::spin::Mutex;
+use lazy_static::lazy_static;
+use spin::Mutex;
+use volatile::Volatile;
 
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer{x: 0,y: 0,
@@ -102,12 +99,21 @@ impl Writer {
         for byte in s.bytes() {
             match byte {
                 // printable ASCII byte or newline
-                0x20...0x7e | b'\n' => self.write_byte(byte),
+                0x20..=0x7e | b'\n' => self.write_byte(byte),
                 // not part of printable ASCII range
                 _ => self.write_byte(0xfe),
             }
         }
     }
+
+    // fn scroll(&mut self) {
+    //     for i in BUFFER_HEIGHT {
+    //         for j in BUFFER_WIDTH {
+    //             // Each line is srolled on line up
+
+    //         }
+    //     }
+    // }
 }
 
 impl fmt::Write for Writer {
